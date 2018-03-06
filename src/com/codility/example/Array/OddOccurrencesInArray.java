@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.codility.example.OddOccurrencesInArray;
+package com.codility.example.Array;
 
 import java.util.HashSet;
 import java.util.Set;
