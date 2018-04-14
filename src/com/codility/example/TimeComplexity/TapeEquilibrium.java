@@ -1,7 +1,9 @@
 /**
  * 
  */
-package com.codility.example.TimeComplexity;/**
+package com.codility.example.TimeComplexity;
+
+/**
  * @author romiljain
  *
  */
@@ -13,7 +15,6 @@ public class TapeEquilibrium {
 	public static void main(String[] args) {
 		TapeEquilibrium equ = new TapeEquilibrium();
 		System.out.println(equ.solution());
-
 	}
 	
 	public int solution() {

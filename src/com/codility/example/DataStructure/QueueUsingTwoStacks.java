@@ -4,32 +4,32 @@ import java.util.Stack;
 
 public class QueueUsingTwoStacks {
 	
-	Stack<Integer> stack = new Stack<Integer>();
-	Stack<Integer> stack2 = new Stack<Integer>();
+	Stack<Integer> in = new Stack<Integer>();
+	Stack<Integer> out = new Stack<Integer>();
 	
 	int front = 0;
 	
 	public QueueUsingTwoStacks() {
-        
+        // Default Constructor
     }
     
     /** Push element x to the back of queue. */
-    public void push(int x) {
-    	if (stack.isEmpty()){
+    public void enqueue(int x) {
+    	if (in.isEmpty()){
     		front = x;
     	}
-    	stack.push(x);
+    	in.push(x);
     }
     
     /** Removes the element from in front of queue and returns that element. */
-    public int pop() {
-    	while(!stack.isEmpty()){
-    		stack2.push(stack.pop());
+    public int dequeue() {
+    	while(!in.isEmpty()){
+    		out.push(in.pop());
     	}
-    	int top = stack2.isEmpty()? 0: stack2.pop();
-    	front = stack2.isEmpty()? 0: stack2.peek();
-    	while(!stack2.isEmpty()){
-    		stack.push(stack2.pop());
+    	int top = out.isEmpty()? 0: out.pop();
+    	front = out.isEmpty()? 0: out.peek();
+    	while(!out.isEmpty()){
+    		in.push(out.pop());
     	}
         return top;
     }
@@ -41,6 +41,6 @@ public class QueueUsingTwoStacks {
     
     /** Returns whether the queue is empty. */
     public boolean empty() {
-        return stack.isEmpty() ? true:false;
+        return in.isEmpty() ? true:false;
     }
 }
