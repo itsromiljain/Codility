@@ -12,6 +12,7 @@ public class MinHeap {
 	/**
 	 * @param args
 	 */
+	// Time Complexity: O (N log N)
 	public static void main(String[] args) {
 		//int array[] = {10,8,9,7,4,1,3};
 		int array[] = {4, 5, 1, 6, 7, 3, 2};
@@ -20,6 +21,7 @@ public class MinHeap {
 		System.out.println(minHeap.buildMinHeap(array));
 	}
 
+	// Time Complexity: O ( N ).
 	public int[] buildMinHeap(int array[]) {
 
 		// First find the size of Array. n is the length of an array
@@ -34,6 +36,7 @@ public class MinHeap {
 
 	}
 
+	// Time Complexity: O (log N) .
 	public void minHeapify(int array[], int index, int size) {
 
 		int leftNodeIndex = 2 * index + 1;
