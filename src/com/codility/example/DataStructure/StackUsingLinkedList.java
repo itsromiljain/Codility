@@ -6,6 +6,8 @@ package com.codility.example.DataStructure;
 /**
  * @author romiljain
  *
+ *This program is implementation of Stack using LinkedList
+ *
  */
 public class StackUsingLinkedList {
 

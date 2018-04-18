@@ -5,13 +5,15 @@ package com.codility.example.DataStructure;
 
 /**
  * @author romiljain
+ * 
+ * This program is implementation of Queue using Array
  *
  */
 public class QueueUsingArray {
 
 	int front = 0;
 	
-	int index = 0;
+	int rare = 0;
 	
 	private int size;
 
@@ -30,12 +32,12 @@ public class QueueUsingArray {
 	}
 
 	public void enqueue(int x) {
-		if(index == size){
+		if(rare == size){
 			// queue is full
 			System.out.println("Queue is Full");
 		}else {
-			array[index] = x;
-			index = index+1;
+			array[rare] = x;
+			rare = rare+1;
 		}
 	}
 
@@ -48,12 +50,10 @@ public class QueueUsingArray {
 		}else {
 			element = array[front];
 			// resize array
-			int[] tempArray = new int[size];
-			for(int i=0; i<size-1; i++){
-				tempArray[i] = array[i+1];
+			for(int i=1; i<size; i++){
+				array[i-1] = array[i];
  			}
-			array = tempArray;
-			index = index-1;
+			rare = rare-1;
 		}
 		return element;
 	}
@@ -65,7 +65,7 @@ public class QueueUsingArray {
 
 	/** Returns whether the queue is empty. */
 	public boolean empty() {
-		if(front == index){
+		if(front == rare){
 			// queue is empty
 			return true;
 		}

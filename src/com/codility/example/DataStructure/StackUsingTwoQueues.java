@@ -8,6 +8,8 @@ import java.util.Queue;
 
 /**
  * @author romiljain
+ * 
+ * This program is implementation of Stack using 2 Queues
  *
  */
 public class StackUsingTwoQueues {
