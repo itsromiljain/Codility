@@ -16,7 +16,8 @@ public class MaxHeap {
 	// Time Complexity: O (N log N)
 	public static void main(String args[]) {
 		// int array[] = {1,4,3,7,8,9,10};
-		int array[] = { 3, 8, 5, 7, 10, 12, 6 };
+		//int array[] = { 3, 8, 5, 7, 10, 12, 6 };
+		int array[] = {4, 5, 1, 6, 7, 3, 2};
 		MaxHeap mxHeap = new MaxHeap();
 		System.out.println(mxHeap.buildMaxHeap(array));
 	}
@@ -45,7 +46,7 @@ public class MaxHeap {
 
 		int largestIndex = index;
 
-		if (leftNodeIndex <= size && array[leftNodeIndex] > array[index]) {
+		if (leftNodeIndex < size && array[leftNodeIndex] > array[index]) {
 			largestIndex = leftNodeIndex;
 		}
 

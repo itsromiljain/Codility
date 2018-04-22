@@ -53,10 +53,10 @@ public class MinHeap {
 			smallestIndex = rightNodeIndex;
 		}
 
-		// now if largest index is not same as index we should swap the elements
+		// now if smallest index is not same as index we should swap the elements
 		// and call on tree nodes below it
 		if (smallestIndex != index) {
-			// when we get the largestIndex we should swap the elements
+			// when we get the smallestIndex we should swap the elements
 			int temp = array[index];
 			array[index] = array[smallestIndex];
 			array[smallestIndex] = temp;

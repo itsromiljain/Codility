@@ -13,9 +13,20 @@ public class Node {
 	
 	private Node link;
 	
+	private Node left, right;
+	
 	public Node(){
 		this.data = 0;
 		this.link = null;
+		left = null;
+		right = null;
+	}
+	
+	public Node(int data){
+		this.data = data;
+		this.link = null;
+		left = null;
+		right = null;
 	}
 	
 	public Node(int data, Node link){
@@ -37,6 +48,22 @@ public class Node {
 
 	public void setLink(Node link) {
 		this.link = link;
+	}
+
+	public Node getLeft() {
+		return left;
+	}
+
+	public void setLeft(Node left) {
+		this.left = left;
+	}
+
+	public Node getRight() {
+		return right;
+	}
+
+	public void setRight(Node right) {
+		this.right = right;
 	}
 	
 }
