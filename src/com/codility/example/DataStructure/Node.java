@@ -9,37 +9,37 @@ package com.codility.example.DataStructure;
  */
 public class Node {
 	
-	private int data;
+	private int value;
 	
 	private Node link;
 	
 	private Node left, right;
 	
 	public Node(){
-		this.data = 0;
+		this.value = 0;
 		this.link = null;
 		left = null;
 		right = null;
 	}
 	
-	public Node(int data){
-		this.data = data;
+	public Node(int value){
+		this.value = value;
 		this.link = null;
 		left = null;
 		right = null;
 	}
 	
-	public Node(int data, Node link){
-		this.data = data;
+	public Node(int value, Node link){
+		this.value = value;
 		this.link = link;
 	}
 
-	public int getData() {
-		return data;
+	public int getValue() {
+		return value;
 	}
 
-	public void setData(int data) {
-		this.data = data;
+	public void setValue(int value) {
+		this.value = value;
 	}
 
 	public Node getLink() {

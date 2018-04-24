@@ -38,7 +38,7 @@ public class StackUsingLinkedList {
 			// stack is empty
 			System.out.println("Stack is Empty");
 		} else {
-			data = top.getData();
+			data = top.getValue();
 			Node node = top.getLink();
 			top = node;
 			size--;
@@ -48,7 +48,7 @@ public class StackUsingLinkedList {
 	}
 
 	public int top() {
-		return top.getData();
+		return top.getValue();
 	}
 
 	public boolean isEmpty() {

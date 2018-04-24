@@ -19,7 +19,7 @@ public class QueueUsingLinkedList {
 
 	public void enqueue(int x) {
 		Node node = new Node();
-		node.setData(x);
+		node.setValue(x);
 		if (front == null && rear == null) {
 			front = node;
 		} else {
@@ -32,7 +32,7 @@ public class QueueUsingLinkedList {
 	public int dequeue() {
 		if (empty() )
             throw new NoSuchElementException("Underflow Exception");
-		int element = front.getData();
+		int element = front.getValue();
 		front = front.getLink();
 		 if (front == null)
 	            rear = null;
@@ -41,7 +41,7 @@ public class QueueUsingLinkedList {
 
 	/** Get the front element. */
 	public int peek() {
-		return front.getData();
+		return front.getValue();
 	}
 
 	/** Returns whether the queue is empty. */
