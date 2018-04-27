@@ -8,7 +8,7 @@ package com.codility.example.LinkedList;
  * @param <T>
  *
  */
-public class SingleLinkedList<T> {
+public class CircularLinkedList<T> {
 
 	private Node<T> header = null;
 
@@ -22,15 +22,14 @@ public class SingleLinkedList<T> {
 	 */
 	public void addFirst(T element) {
 		Node<T> node = new Node<T>(element);
-		if (header == null && tail == null) {
-			// If header and tail is null then this is the first element to be
-			// added
+		if (size == 0) {
+			// element is added as header
 			header = node;
 			tail = node;
 		} else {
-			// Add element at Head
 			node.setNext(header);
 			header = node;
+			tail.setNext(header);
 		}
 		++size;
 	}
@@ -41,13 +40,12 @@ public class SingleLinkedList<T> {
 	 */
 	public void addLast(T element) {
 		Node<T> node = new Node<T>(element);
-		if (header == null && tail == null) {
-			// If header and tail is null then this is the first element to be
-			// added
+		if (size == 0) {
+			// element is added as header
 			header = node;
 			tail = node;
 		} else {
-			// Add element at Tail
+			node.setNext(header);
 			tail.setNext(node);
 			tail = node;
 		}
@@ -60,17 +58,14 @@ public class SingleLinkedList<T> {
 	 */
 	public void add(T element, int index) {
 		Node<T> node = new Node<T>(element);
-		if (index == 0) {
+		if(index == 0){
 			addFirst(element);
-		} else if (index == size) {
-			addLast(element);
-		} else {
+		}else {
 			Node<T> previousNode = get(index - 1);
 			node.setNext(previousNode.getNext());
 			previousNode.setNext(node);
 			++size;
 		}
-		
 	}
 
 	/**
@@ -78,17 +73,7 @@ public class SingleLinkedList<T> {
 	 * 
 	 */
 	public void add(T element) {
-		Node<T> node = new Node<T>(element);
-		if (header == null && tail == null) {
-			// If header is null then This is the first element to be added
-			header = node;
-			tail = node;
-		} else {
-			tail.setNext(node);
-			tail = node;
-
-		}
-		++size;
+		addLast(element);
 	}
 
 	/**
@@ -96,12 +81,11 @@ public class SingleLinkedList<T> {
 	 * 
 	 */
 	public void removeFirst() {
-		if (size == 0) {
-			System.out.println("List is Empty");
-		} else {
+		if (size != 0) {
 			header = header.getNext();
+			tail.setNext(header);
+			--size;
 		}
-		--size;
 	}
 
 	/**
@@ -109,14 +93,11 @@ public class SingleLinkedList<T> {
 	 * 
 	 */
 	public void removeLast() {
-		if (size == 0) {
-			System.out.println("List is Empty");
-		} else {
-			tail = null;
+		if (size != 0) {
 			tail = get(size - 2);
-			tail.setNext(null);
+			tail.setNext(header);
+			--size;
 		}
-		--size;
 	}
 
 	/**
@@ -124,21 +105,17 @@ public class SingleLinkedList<T> {
 	 * 
 	 */
 	public void remove(int index) {
-		if (size == 0) {
-			System.out.println("List is Empty");
-		} else {
+		if (size != 0) {
 			if (index == 0) {
 				removeFirst();
-			} else if(index == size-1) {
+			} else if (index == size - 1) {
 				removeLast();
-			}else {
+			} else {
 				Node<T> previousNode = get(index - 1);
 				Node<T> nodeAtIndex = previousNode.getNext();
 				previousNode.setNext(nodeAtIndex.getNext());
-				nodeAtIndex = null;
 				--size;
 			}
-
 		}
 	}
 
@@ -147,27 +124,23 @@ public class SingleLinkedList<T> {
 	 * 
 	 */
 	public void remove(T element) {
-		if (size == 0) {
-			System.out.println("List is Empty");
-		} else {
-			Node<T> previousNode = previousNode(element);
-			if (previousNode == null) {
-				// Node is header
-				header = header.getNext();
+		if (size != 0) {
+			if (element.equals(header.getElement())) {
+				removeFirst();
+			} else if (element.equals(tail.getElement())) {
+				removeLast();
 			} else {
+				Node<T> previousNode = previousNode(element);
 				Node<T> nodeAtIndex = previousNode.getNext();
 				previousNode.setNext(nodeAtIndex.getNext());
-				nodeAtIndex = null;
+				--size;
 			}
-			--size;
 		}
 	}
 
 	public Node<T> get(int index) {
 		Node<T> node = null;
-		if (size == 0) {
-			System.out.println("List is Empty");
-		} else if (index < size && size > 0) {
+		if (size != 0) {
 			node = header;
 			for (int i = 0; i < index; i++) {
 				node = node.getNext();
@@ -183,16 +156,17 @@ public class SingleLinkedList<T> {
 	private Node<T> previousNode(T element) {
 		Node<T> node = header;
 		if (element.equals(node.getElement())) {
-			return null;
+			return tail;
 		} else {
-			while(node!= null){
-				if (element.equals(node.getNext().getElement())){
-					return node;
+			for (int i = 0; i < size - 1; i++) {
+				if (element.equals(node.getNext().getElement())) {
+					break;
 				}
 				node = node.getNext();
 			}
+			return node;
 		}
-		return null;
+
 	}
 
 }
