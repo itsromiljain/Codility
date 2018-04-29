@@ -3,11 +3,14 @@
  */
 package com.codility.example.DataStructure;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * @author romiljain
  *
  */
-public class BinarySearchTreeImp {
+public class BinarySearchTree {
 
 	private Node rootNode;
 
@@ -15,7 +18,7 @@ public class BinarySearchTreeImp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		BinarySearchTreeImp bst = new BinarySearchTreeImp();
+		BinarySearchTree bst = new BinarySearchTree();
 		bst.insert(10);
 		bst.insert(6);
 		bst.insert(4);
@@ -31,7 +34,17 @@ public class BinarySearchTreeImp {
 		bst.preOrder(bst.rootNode);
 		bst.delete(6);
 		System.out.println("");
+		System.out.println("--------PreOrder-------------");
 		bst.preOrder(bst.rootNode);
+		System.out.println(" ");
+		System.out.println("--------InOrder--------------");
+		bst.inOrder(bst.rootNode);
+		System.out.println(" ");
+		System.out.println("--------PostOrder------------");
+		bst.postOrder(bst.rootNode);
+		System.out.println(" ");
+		System.out.println("---------BFS-----------------");
+		bst.bfs(bst.rootNode);
 	}
 
 	/*
@@ -123,7 +136,7 @@ public class BinarySearchTreeImp {
 		return node.getLeft() == null ? node.getValue() : findSmallestValue(node.getLeft());
 	}
 
-	/* A utility function to print preorder traversal of BST */
+	/* A utility function to print preorder(DFS) traversal of BST */
 	public void preOrder(Node node) {
 		if (node == null) {
 			return;
@@ -132,5 +145,41 @@ public class BinarySearchTreeImp {
 		preOrder(node.getLeft());
 		preOrder(node.getRight());
 	}
+	
+	/* A utility function to print inorder(DFS) traversal of BST */
+	public void inOrder(Node node) {
+		if (node == null) {
+			return;
+		}
+		inOrder(node.getLeft());
+		System.out.print(node.getValue() + " ");
+		inOrder(node.getRight());
+	}
+	
+	/* A utility function to print postorder(DFS) traversal of BST */
+	public void postOrder(Node node) {
+		if (node == null) {
+			return;
+		}
+		postOrder(node.getLeft());
+		postOrder(node.getRight());
+		System.out.print(node.getValue() + " ");
+	}
+	
+	/* A utility function to print BFS traversal of BST */
+	public void bfs(Node rootNode) {
+		// To implement Breadth First Search, Queue is required
+		Queue<Node> queue = new LinkedList<Node>();
+		queue.add(rootNode);
+		while (!queue.isEmpty()){
+			Node node = queue.poll();
+			System.out.print(node.getValue()+" ");
+			if(node.getLeft() != null)
+				queue.add(node.getLeft());
+			if(node.getRight() != null)
+				queue.add(node.getRight());
+		}
+	}
+	
 
 }

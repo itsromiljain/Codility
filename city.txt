@@ -1,0 +1,15 @@
+7
+Roorkee
+Haridwar
+Meerut
+Sharanpur
+Dehradun
+Rishikesh
+Mussorie
+Roorkee Haridwar 30
+Roorkee Meerut 100
+Roorkee Sharanpur 80
+Haridwar Dehradun 70
+Haridwar Rishikesh 40
+Sharanpur Dehradun 50
+Dehradun Mussorie 40
