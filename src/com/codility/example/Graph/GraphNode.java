@@ -5,12 +5,11 @@ package com.codility.example.Graph;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * @author romiljain
@@ -18,7 +17,7 @@ import java.util.Set;
  */
 public class GraphNode {
 	
-	Set<Node> nodes;
+	Node[] nodes;
 	
 	/**
 	 * Adjacency List Implementation
@@ -28,10 +27,10 @@ public class GraphNode {
 	public GraphNode(String file) throws FileNotFoundException  {
 		Scanner sc = new Scanner(new File(file));
 		int size = sc.nextInt();
-		nodes = new HashSet<Node>();
+		nodes = new Node[size];
 		for(int i = 0; i < size; i++){
-			Node node = new Node(sc.next());
-			nodes.add(node);
+			Node node = new Node(i, sc.next());
+			nodes[i] = node;
 		}
 		while(sc.hasNext()){
 			Node vertex = getNode(sc.next());
@@ -44,21 +43,26 @@ public class GraphNode {
 		sc.close();
 	}
 	
+	/**
+	 * Get Node from the name
+	 * 
+	 * */
 	private Node getNode(String name) {
-		Iterator<Node> itr = nodes.iterator();
-		while(itr.hasNext()){
-			Node node = itr.next();
-			if(name.equals(node.getName())){
-				return node;
+		for(int i=0; i<nodes.length; i++){
+			if(name.equals(nodes[i].getName())){
+				return nodes[i];
 			}
 		}
 		return null;
 	}
 	
+	/**
+	 * Printing Graph Iterating through the nodes
+	 * 
+	 * */
 	private void print(){
-		Iterator<Node> itr = nodes.iterator();
-		while(itr.hasNext()){
-			Node vertex = itr.next();
+		for(int i=0; i<nodes.length; i++){
+			Node vertex = nodes[i];
 			Map<Node, Integer> map = vertex.getAdjacencyList();
 			System.out.print(vertex.getName());
 			for(Entry<Node, Integer> entry: map.entrySet()){
@@ -71,6 +75,76 @@ public class GraphNode {
 		}
 	}
 	
+	
+	/**
+	 * Printing Graph as per BFS
+	 * 
+	 * */
+	private void printBFS(){
+		boolean[] visitedNode = new boolean[nodes.length];
+		Queue<Integer> queue = new LinkedList<Integer>();
+		for (int i = 0; i < nodes.length; i++) {
+			if (!visitedNode[i]) {
+				bfs(i, visitedNode, queue);
+			}
+		}
+	}
+	
+	/**
+	 * BFS Implementation of a Graph
+	 * Uses Queue to print each level first before proceeding to child
+	 * 
+	 * */
+	private void bfs(int start, boolean[] visitedNode, Queue<Integer> queue) {
+		// Mark this node visited
+		visitedNode[start] = true;
+		System.out.println(nodes[start].getName());
+		// Add this node to Queue
+		queue.add(start);
+		while (!queue.isEmpty()) {
+			int topNodeIndex = queue.poll();
+			Map<Node, Integer> map = nodes[topNodeIndex].getAdjacencyList();
+			for (Entry<Node, Integer> entry : map.entrySet()) {
+				if (!visitedNode[entry.getKey().getIndex()]) {
+					System.out.println(entry.getKey().getName());
+					visitedNode[entry.getKey().getIndex()] = true;
+					queue.add(entry.getKey().getIndex());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Printing Graph as per DFS
+	 * 
+	 * */
+	private void printDFS(){
+		boolean[] visitedNode = new boolean[nodes.length];
+		for (int i = 0; i < nodes.length; i++) {
+			if (!visitedNode[i]) {
+				dfs(i, visitedNode);
+			}
+		}
+	}
+	
+	/**
+	 * DFS Implementation of a Graph
+	 * Uses Recursive tp print th child first
+	 * 
+	 */
+	private void dfs(int i, boolean[] visitedNode) {
+		// Mark this node visited
+		visitedNode[i] = true;
+		System.out.println(nodes[i].getName());
+		Map<Node, Integer> map = nodes[i].getAdjacencyList();
+		for (Entry<Node, Integer> entry : map.entrySet()) {
+			if (!visitedNode[entry.getKey().getIndex()]) {
+				System.out.println(nodes[i].getName()+"--"+entry.getKey().getName());
+				dfs(entry.getKey().getIndex(), visitedNode);
+			}
+		}
+	}
+	
 	/**
 	 * @param args
 	 * @throws FileNotFoundException 
@@ -79,10 +153,16 @@ public class GraphNode {
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter Graph File Name: ");
 		String file = sc.nextLine();
-		GraphNode graph = new GraphNode(file);
-		graph.print();
 		sc.close();
-
+		GraphNode graph = new GraphNode(file);
+		System.out.println("-----Print Graph------");
+		graph.print();
+		// BFS Printing of Graph
+		System.out.println("-----BFS------");
+		graph.printBFS();
+		// DFS Printing of Graph
+		System.out.println("-----DFS------");
+		graph.printDFS();
 	}
 
 }
