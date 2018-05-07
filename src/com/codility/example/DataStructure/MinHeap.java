@@ -18,7 +18,10 @@ public class MinHeap {
 		int array[] = {4, 5, 1, 6, 7, 3, 2};
 		//int array[] = {3, 8, 5, 7, 10, 12, 6};
 		MinHeap minHeap = new MinHeap();
-		System.out.println(minHeap.buildMinHeap(array));
+		for(int i=0; i<array.length; i++){
+			System.out.println(minHeap.buildMinHeap(array)[i]);
+		}
+		
 	}
 
 	// Time Complexity: O ( N ).

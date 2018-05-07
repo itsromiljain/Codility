@@ -4,6 +4,8 @@
 package com.codility.example.Graph;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +19,11 @@ public class Node {
 	private int index;
 	
 	private Map<Node, Integer> adjacencyList = new HashMap<Node, Integer>();
+	
+	// distance and shortestDistanceLink would be used in Dijkstra Algorithm.
+	private int distance = Integer.MAX_VALUE;
+	
+	private List<Node> shortestDistanceLink = new LinkedList<Node>();
 	
 	public Node(int index, String name){
 		this.index = index;
@@ -46,5 +53,21 @@ public class Node {
 	public void setAdjacencyList(Map<Node, Integer> adjacencyList) {
 		this.adjacencyList = adjacencyList;
 	}
-	
+
+	public int getDistance() {
+		return distance;
+	}
+
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public List<Node> getShortestDistanceLink() {
+		return shortestDistanceLink;
+	}
+
+	public void setShortestDistanceLink(List<Node> shortestDistanceLink) {
+		this.shortestDistanceLink = shortestDistanceLink;
+	}
+
 }
