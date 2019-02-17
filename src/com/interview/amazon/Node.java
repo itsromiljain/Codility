@@ -1,7 +1,4 @@
-/**
- * 
- */
-package com.example.Graph;
+package com.interview.amazon;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -69,12 +66,5 @@ public class Node {
 	public void setShortestDistanceLink(List<Node> shortestDistanceLink) {
 		this.shortestDistanceLink = shortestDistanceLink;
 	}
-
-	@Override
-	public String toString() {
-		return "Node [name=" + name + ", index=" + index + "]";
-	}
-	
-	
 
 }
