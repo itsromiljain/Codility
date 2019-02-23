@@ -4,12 +4,8 @@
 package com.example.affirm;
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,10 +20,14 @@ import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
  */
 public class ReadCSVData {
 
-	private static final String LOANS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/small/loans.csv";
-	private static final String BANKS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/small/banks.csv";
-	private static final String COVENANTS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/small/covenants.csv";
-	private static final String FACILITIES_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/small/facilities.csv";
+	private static final String LOANS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/large/loans.csv";
+	private static final String BANKS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/large/banks.csv";
+	private static final String COVENANTS_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/large/covenants.csv";
+	private static final String FACILITIES_CSV_FILE_PATH = "/Users/romiljain/affirm-take-home-interview-sept-2018/large/facilities.csv";
+
+	private static Map<Integer, Facilities> facilitiesMap = null;
+
+	private static Map<String, CovenantRule> covenantRuleMap = null;
 
 	/**
 	 * @param args
@@ -56,43 +56,46 @@ public class ReadCSVData {
 	}
 
 	private static void calculateAssignmentAndYield(List<Covenants> covenantsData, List<Loans> loansData, Map<Integer, List<Facilities>> bankFacilityMap) {
-		Set<Integer> bankIds = new HashSet<Integer>();
+		Map<Integer, Integer> assignmentMap = new HashMap<>();
+		Map<Integer, Double> yieldMap = new HashMap<>();
 		for (Loans loan : loansData) {
-			for (Covenants coventants : covenantsData) {
-				if ((coventants.getMaxDefaultLikelihood() != null && !StringUtils.isEmpty(coventants.getBannedState())
-						&& !loan.getState().equals(coventants.getBannedState())
-						&& coventants.getMaxDefaultLikelihood() >= loan.getDefaultLikelihood())
-						|| (coventants.getMaxDefaultLikelihood() == null
-								&& !loan.getState().equals(coventants.getBannedState()))
-						|| (StringUtils.isEmpty(coventants.getBannedState())
-								&& coventants.getMaxDefaultLikelihood() >= loan.getDefaultLikelihood())) {
-					
-					bankIds.add(coventants.getBankId());
-
+			Set<Facilities> facilities = new HashSet<>();
+			for (Map.Entry<String, CovenantRule> entry : covenantRuleMap.entrySet()){
+				CovenantRule covenantRule = entry.getValue();
+				if(loan.getDefaultLikelihood() <= covenantRule.getMaxDefaultLikelihood() && !covenantRule.getBannedStates().contains(loan.getState())){
+					// Add this facility Id in the list
+					Integer facilityId = Integer.valueOf(entry.getKey().split("_")[0]);
+					Facilities facility = facilitiesMap.get(facilityId);
+					if(facility.getAmount() >= loan.getAmount())
+						facilities.add(facility);
 				}
 			}
 			// calculate cheapest facility by calculating the interest rate.
-			
-			
+			if(!facilities.isEmpty()){
+				Integer facilityId = facilities.stream().sorted(Comparator.comparing(Facilities::getInterestRate)).collect(Collectors.toList()).get(0).getFacilityId();
+				System.out.println(loan.getLoanId() + " :: " + facilityId);
+
+				assignmentMap.put(loan.getLoanId(), facilityId);
+				Facilities facility = facilitiesMap.get(facilityId);
+				facility.setAmount(facility.getAmount()-loan.getAmount());
+				facilitiesMap.put(facilityId, facility);
+				Double expected_yield = (1 - loan.getDefaultLikelihood()) * loan.getInterestRate() * loan.getAmount() - loan.getDefaultLikelihood() * loan.getAmount() - facility.getInterestRate() * loan.getAmount();
+
+				if (yieldMap.get(facilityId) != null) {
+					expected_yield = expected_yield.doubleValue() + yieldMap.get(facilityId).doubleValue();
+				}
+				yieldMap.put(facilityId, expected_yield);
+			}
+		}
+		for(Map.Entry<Integer, Double> entry : yieldMap.entrySet()){
+			System.out.println(entry.getKey() + " :: " + Math.round(entry.getValue()));
 		}
 	}
 
 	public static List<Bank> readBankData(String file) {
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("id", "bankId");
-		mapping.put("name", "bankName");
-		// HeaderColumnNameTranslateMappingStrategy for Bank Class
-		//HeaderColumnNameTranslateMappingStrategy<Bank> strategy = new HeaderColumnNameTranslateMappingStrategy<Bank>();
-		//strategy.setType(Bank.class);
-		//strategy.setColumnMapping(mapping);
 		try {
 			FileReader filereader = new FileReader(file);
 			CSVReader csvReader = new CSVReader(filereader);
-			// CsvToBean<Bank> csvToBean = new CsvToBean<Bank>();
-			// call the parse method of CsvToBean
-			// pass strategy, csvReader to parse method
-			// csvToBean.setCsvReader(csvReader);
-			// csvToBean.setMappingStrategy(strategy);
 			CsvToBean<Bank> csvToBean = new CsvToBeanBuilder<Bank>(csvReader).withType(Bank.class)
 					.withIgnoreLeadingWhiteSpace(true).build();
 
@@ -109,24 +112,16 @@ public class ReadCSVData {
 	}
 
 	public static List<Facilities> readFacilityData(String file) {
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("amount", "amount");
-		mapping.put("interest_rate", "interestRate");
-		mapping.put("id", "facilityId");
-		mapping.put("bank_id", "bankId");
-		// HeaderColumnNameTranslateMappingStrategy for Facilities Class
-		HeaderColumnNameTranslateMappingStrategy<Facilities> strategy = new HeaderColumnNameTranslateMappingStrategy<Facilities>();
-		strategy.setType(Facilities.class);
-		strategy.setColumnMapping(mapping);
 		try {
 			FileReader filereader = new FileReader(file);
 			CSVReader csvReader = new CSVReader(filereader);
 			CsvToBean<Facilities> csvToBean = new CsvToBeanBuilder<Facilities>(csvReader).withType(Facilities.class)
 					.withIgnoreLeadingWhiteSpace(true).build();
 			List<Facilities> facilityList = csvToBean.parse();
-			// print details of Bean object
+			facilitiesMap = new HashMap<>();
 			for (Facilities facility : facilityList) {
 				System.out.println(facility.toString());
+				facilitiesMap.put(facility.getFacilityId(), facility);
 			}
 			return facilityList;
 		} catch (Exception e) {
@@ -135,17 +130,44 @@ public class ReadCSVData {
 		}
 	}
 
+	public static List<Covenants> readCoventantsData(String file) {
+		try {
+			FileReader filereader = new FileReader(file);
+			CSVReader csvReader = new CSVReader(filereader);
+			CsvToBean<Covenants> csvToBean = new CsvToBeanBuilder<Covenants>(csvReader).withType(Covenants.class)
+					.withIgnoreLeadingWhiteSpace(true).build();
+			List<Covenants> covenantList = csvToBean.parse();
+			// print details of Bean object
+			covenantRuleMap = new HashMap<>();
+			for (Covenants covenant : covenantList) {
+				System.out.println(covenant.toString());
+				String id =  covenant.getFacilityId() + "_" + covenant.getBankId();
+				Float maxDefaultLikelihood = covenant.getMaxDefaultLikelihood();
+				String bannedState = covenant.getBannedState();
+				CovenantRule covenantRule = covenantRuleMap.get(id);
+				if(null == covenantRule){
+					List<String> bannedStates = new ArrayList<>();
+					bannedStates.add(bannedState);
+					covenantRule = new CovenantRule();
+					covenantRule.setMaxDefaultLikelihood(maxDefaultLikelihood);
+					covenantRule.setBannedStates(bannedStates);
+
+				}else {
+					covenantRule.getBannedStates().add(bannedState);
+					if(null == covenantRule.getMaxDefaultLikelihood() || (null != maxDefaultLikelihood && maxDefaultLikelihood > covenantRule.getMaxDefaultLikelihood())){
+						covenantRule.setMaxDefaultLikelihood(maxDefaultLikelihood);
+					}
+				}
+				covenantRuleMap.put(id, covenantRule);
+			}
+			return covenantList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static List<Loans> readLoansData(String file) {
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("interest_rate", "interestRate");
-		mapping.put("amount", "amount");
-		mapping.put("id", "loanId");
-		mapping.put("default_likelihood", "defaultLikelihood");
-		mapping.put("state", "state");
-		// HeaderColumnNameTranslateMappingStrategy for Loan Class
-		HeaderColumnNameTranslateMappingStrategy<Loans> strategy = new HeaderColumnNameTranslateMappingStrategy<Loans>();
-		strategy.setType(Loans.class);
-		strategy.setColumnMapping(mapping);
 		try {
 			FileReader filereader = new FileReader(file);
 			CSVReader csvReader = new CSVReader(filereader);
@@ -157,33 +179,6 @@ public class ReadCSVData {
 				System.out.println(loan.toString());
 			}
 			return loanList;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static List<Covenants> readCoventantsData(String file) {
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("facility_id", "facilityId");
-		mapping.put("max_default_likelihood", "maxDefaultLikelihood");
-		mapping.put("bank_id", "bankId");
-		mapping.put("banned_state", "bannedState");
-		// HeaderColumnNameTranslateMappingStrategy for Loan Class
-		HeaderColumnNameTranslateMappingStrategy<Covenants> strategy = new HeaderColumnNameTranslateMappingStrategy<Covenants>();
-		strategy.setType(Covenants.class);
-		strategy.setColumnMapping(mapping);
-		try {
-			FileReader filereader = new FileReader(file);
-			CSVReader csvReader = new CSVReader(filereader);
-			CsvToBean<Covenants> csvToBean = new CsvToBeanBuilder<Covenants>(csvReader).withType(Covenants.class)
-					.withIgnoreLeadingWhiteSpace(true).build();
-			List<Covenants> covenantList = csvToBean.parse();
-			// print details of Bean object
-			for (Covenants covenant : covenantList) {
-				System.out.println(covenant.toString());
-			}
-			return covenantList;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
